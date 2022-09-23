@@ -10,16 +10,16 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource) :
     BaseViewModel(app) {
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
-    val reminderSelectedLocationStr = MutableLiveData<String>()
     val selectedPOI = MutableLiveData<PointOfInterest>()
-    val latitude = MutableLiveData<Double>()
-    val longitude = MutableLiveData<Double>()
+
+    val addGeoFencingRequest = SingleLiveEvent<ReminderDataItem>()
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -27,19 +27,9 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     fun onClear() {
         reminderTitle.value = null
         reminderDescription.value = null
-        reminderSelectedLocationStr.value = null
         selectedPOI.value = null
-        latitude.value = null
-        longitude.value = null
-    }
 
-    /**
-     * Validate the entered data then saves the reminder data to the DataSource
-     */
-    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
-        if (validateEnteredData(reminderData)) {
-            saveReminder(reminderData)
-        }
+        addGeoFencingRequest.value = null
     }
 
     /**
@@ -68,15 +58,35 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
      * Validate the entered data and show error to the user if there's any invalid data
      */
     fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
-        if (reminderData.title.isNullOrEmpty()) {
+        if (reminderData.title.isNullOrBlank()) {
             showSnackBarInt.value = R.string.err_enter_title
             return false
         }
 
-        if (reminderData.location.isNullOrEmpty()) {
+        if (reminderData.location.isNullOrBlank()) {
             showSnackBarInt.value = R.string.err_select_location
             return false
         }
         return true
+    }
+
+    fun onSaveReminder(reminderDataItem: ReminderDataItem) {
+        if (validateEnteredData(reminderDataItem)) {
+            addGeoFencingRequest.value = reminderDataItem
+        }
+    }
+
+    fun onAddGeofencingSucceeded(reminderData: ReminderDataItem) {
+        showSnackBarInt.value = R.string.geofences_added
+        saveReminder(reminderData)
+    }
+
+    fun onAddGeofencingFailed() {
+        showSnackBarInt.value = R.string.geofences_not_added
+    }
+
+    fun onSaveLocation(poi: PointOfInterest?) {
+        selectedPOI.value = poi
+        navigationCommand.value = NavigationCommand.Back
     }
 }
