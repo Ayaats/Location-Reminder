@@ -147,7 +147,7 @@ class SaveReminderViewModelTest {
         )
         MatcherAssert.assertThat(res, `is`(false))
     }
-
+    //test when the the entered data is validated , it will return true
     @Test
     fun validateEnteredData_ReturnTrue() {
         // WHEN the data is validated
