@@ -51,7 +51,7 @@ class SaveReminderViewModelTest {
 
         viewModel = SaveReminderViewModel(app, fakeDataSource)
     }
-
+    //check if New Reminder created and values assigned to viewmodel
     @Test
     fun saveReminder_ShowLoading() = runBlockingTest {
         // Pause dispatcher so you can verify initial values.
@@ -80,7 +80,7 @@ class SaveReminderViewModelTest {
         )
         Assert.assertEquals(viewModel.navigationCommand.getOrAwaitValue(), NavigationCommand.Back)
     }
-
+    // validate that the data entered if its empty ,it will return false
     @Test
     fun validateEnteredData_TitleEmpty_ReturnFalse(){
         // GIVEN reminder with empty title
@@ -97,7 +97,7 @@ class SaveReminderViewModelTest {
         )
         MatcherAssert.assertThat(res, `is`(false))
     }
-
+    // validate that the data entered if its null ,it will return false
     @Test
     fun validateEnteredData_TitleNull_ReturnFalse(){
         // GIVEN reminder with empty title
@@ -106,7 +106,6 @@ class SaveReminderViewModelTest {
 
         // WHEN the data is validated
         val res = viewModel.validateEnteredData(reminderData)
-
         // THEN
         MatcherAssert.assertThat(
             viewModel.showSnackBarInt.getOrAwaitValue(),
@@ -114,7 +113,7 @@ class SaveReminderViewModelTest {
         )
         MatcherAssert.assertThat(res, `is`(false))
     }
-
+    // validate that the data entered if the location is null ,it will return false
     @Test
     fun validateEnteredData_LocationNull_ReturnFalse(){
         // GIVEN reminder with empty title
@@ -131,7 +130,7 @@ class SaveReminderViewModelTest {
         )
         MatcherAssert.assertThat(res, `is`(false))
     }
-
+    // validate that the data entered if the location is empty ,it will return false
     @Test
     fun validateEnteredData_LocationEmpty_ReturnFalse(){
         // GIVEN reminder with empty title
